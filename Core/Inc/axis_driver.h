@@ -9,6 +9,14 @@
 #define INC_AXIS_DRIVER_H_
 #include "main.h"
 
+
+
+
+typedef enum
+{
+    ERR,
+    SUCCESSFUL
+}ret_val_t;
 typedef struct
 {
     uint16_t pwm;
@@ -16,6 +24,8 @@ typedef struct
     uint32_t desired_value;
 }M_axis_t;
 
+
+#define ANGLE_CONVERT_VAL     (18.0555555555) /*   3.61111111111 = 1 round => 1:5 ratio ~ 18.0555555555*/
 
 
 
