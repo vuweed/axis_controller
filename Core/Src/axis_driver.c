@@ -30,4 +30,37 @@ ret_val_t pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint16_t axis_pin
     }
     return ret_val;
 }
+ret_val_t auto_home(TIM_HandleTypeDef *htim, M_axis_t *axis, uint16_t *axis_pin_num)
+{
+    /*Turn until receive home signal*/
+    int i = 0;
+    for(i = 0; i < 4; i++)
+    {
+        HAL_GPIO_WritePin(GPIOB, *(axis_pin_num + i), SET);
+    }
+//    while()
+    {
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_9) == 1)
+        {
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), SET);
+        }
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_9) == 1)
+        {
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), SET);
+        }
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_9) == 1)
+        {
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), SET);
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
 

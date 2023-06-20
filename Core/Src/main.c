@@ -153,7 +153,7 @@ int main(void)
       pwm_handler(&htim1, &axis1, GPIO_PIN_3, count1);
       pwm_handler(&htim2, &axis2, GPIO_PIN_4, count2);
       pwm_handler(&htim3, &axis3, GPIO_PIN_5, count3);
-      pwm_handler(&htim4, &axis4, GPIO_PIN_13, count4);
+      pwm_handler(&htim4, &axis4, GPIO_PIN_13,count4);
 
   }
   /* USER CODE END 3 */
