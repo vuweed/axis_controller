@@ -81,19 +81,22 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
     if(htim == &htim1){
         counter1 = __HAL_TIM_GET_COUNTER(htim);
-        count1 = (int16_t)counter1;
+        count1 = count1 < 0 ? 0 : (int16_t)counter1;
         }
     else if(htim == &htim2){
         counter2 = __HAL_TIM_GET_COUNTER(htim);
         count2 = (int16_t)counter2;
+        count2 = count2 < 0 ? 0 : (int16_t)counter2;
     }
     else if(htim == &htim3){
         counter3 = __HAL_TIM_GET_COUNTER(htim);
         count3 = (int16_t)counter3;
+        count3 = count3 < 0 ? 0 : (int16_t)counter3;
         }
     else if(htim == &htim4){
         counter4 = __HAL_TIM_GET_COUNTER(htim);
         count4 = (int16_t)counter4;
+        count4 = count4 < 0 ? 0 : (int16_t)counter4;
         }
 
 }
