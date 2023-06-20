@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "axis_driver.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -46,12 +46,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
-typedef struct
-{
-    uint16_t pwm;
-    uint16_t angle;
-    uint32_t desired_value;
-}M_axis_t;
+
 M_axis_t axis1 = {0};
 M_axis_t axis2 = {0};
 M_axis_t axis3 = {0};
@@ -81,46 +76,7 @@ static void MX_TIM4_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_num, uint16_t encoder_val)
-{
-    uint16_t axis_pin_num = 0;
-    axis->desired_value = (uint32_t)(axis->angle * 3.61111111111); //18.0555555555
-    /*PWM*/
-    switch (axis_num) {
-        case 1:
-            axis_pin_num = GPIO_PIN_3;
-            break;
-        case 2:
-            axis_pin_num = GPIO_PIN_4;
-            break;
-        case 3:
-            axis_pin_num = GPIO_PIN_5;
-            break;
-        case 4:
-            axis_pin_num = GPIO_PIN_13;
-            break;
-        default:
-            break;
-    }
 
-    /*1300 ~ 360 degree*/
-    if (axis->desired_value != 0)
-    {
-            if(encoder_val > (axis->desired_value ))
-            {
-                HAL_GPIO_WritePin(GPIOB,axis_pin_num, RESET);
-                axis->desired_value = 0;
-                axis->angle = 0;
-                __HAL_TIM_SET_COUNTER(htim, 0);
-//                counter1 = __HAL_TIM_GET_COUNTER(htim);
-//                count1 = (int16_t)counter1;
-            }
-            else
-            {
-                HAL_GPIO_WritePin(GPIOB,axis_pin_num, SET);
-            }
-    }
-}
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
     if(htim == &htim1){

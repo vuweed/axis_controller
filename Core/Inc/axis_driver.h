@@ -7,7 +7,7 @@
 
 #ifndef INC_AXIS_DRIVER_H_
 #define INC_AXIS_DRIVER_H_
-
+#include "main.h"
 
 typedef struct
 {
