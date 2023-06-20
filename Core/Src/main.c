@@ -42,6 +42,8 @@
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
 typedef struct
@@ -55,15 +57,15 @@ M_axis_t axis2 = {0};
 M_axis_t axis3 = {0};
 M_axis_t axis4 = {0};
 
-uint32_t counter1 = 0;
-uint32_t counter2 = 0;
-uint32_t counter3 = 0;
-uint32_t counter4 = 0;
+volatile uint32_t counter1 = 0;
+volatile uint32_t counter2 = 0;
+volatile uint32_t counter3 = 0;
+volatile uint32_t counter4 = 0;
 
-int16_t count1 = 0;
-int16_t count2 = 0;
-int16_t count3 = 0;
-int16_t count4 = 0;
+volatile int16_t count1 = 0;
+volatile int16_t count2 = 0;
+volatile int16_t count3 = 0;
+volatile int16_t count4 = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,6 +73,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -83,16 +87,16 @@ static void pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_nu
     /*PWM*/
     switch (axis_num) {
         case 1:
-            axis_pin_num = GPIO_PIN_12;
-            break;
-        case 2:
             axis_pin_num = GPIO_PIN_3;
             break;
+        case 2:
+            axis_pin_num = GPIO_PIN_4;
+            break;
         case 3:
-            axis_pin_num = GPIO_PIN_14;
+            axis_pin_num = GPIO_PIN_5;
             break;
         case 4:
-            axis_pin_num = GPIO_PIN_15;
+            axis_pin_num = GPIO_PIN_13;
             break;
         default:
             break;
@@ -101,12 +105,14 @@ static void pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_nu
     /*1300 ~ 360 degree*/
     if (axis->desired_value != 0)
     {
-            if(encoder_val > (axis->desired_value - 250))
+            if(encoder_val > (axis->desired_value ))
             {
                 HAL_GPIO_WritePin(GPIOB,axis_pin_num, RESET);
                 axis->desired_value = 0;
                 axis->angle = 0;
                 __HAL_TIM_SET_COUNTER(htim, 0);
+//                counter1 = __HAL_TIM_GET_COUNTER(htim);
+//                count1 = (int16_t)counter1;
             }
             else
             {
@@ -117,21 +123,21 @@ static void pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_nu
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
     if(htim == &htim1){
-            counter1 = __HAL_TIM_GET_COUNTER(htim);
-            count1 = (int16_t)counter1;
+        counter1 = __HAL_TIM_GET_COUNTER(htim);
+        count1 = (int16_t)counter1;
         }
     else if(htim == &htim2){
         counter2 = __HAL_TIM_GET_COUNTER(htim);
         count2 = (int16_t)counter2;
     }
-//    else if(htim == &htim3){
-//            counter3 = __HAL_TIM_GET_COUNTER(htim);
-//            count3 = (int16_t)counter3;
-//        }
-//    else if(htim == &htim4){
-//            counter4 = __HAL_TIM_GET_COUNTER(htim);
-//            count4 = (int16_t)counter4;
-//        }
+    else if(htim == &htim3){
+        counter3 = __HAL_TIM_GET_COUNTER(htim);
+        count3 = (int16_t)counter3;
+        }
+    else if(htim == &htim4){
+        counter4 = __HAL_TIM_GET_COUNTER(htim);
+        count4 = (int16_t)counter4;
+        }
 
 }
 /* USER CODE END 0 */
@@ -166,9 +172,14 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Encoder_Start_IT(&htim1, TIM_CHANNEL_1 );
-  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_1 );
+  HAL_TIM_Encoder_Start_IT(&htim1, TIM_CHANNEL_1|TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_1|TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_1|TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_1|TIM_CHANNEL_2);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -178,8 +189,16 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      axis2.desired_value = (uint32_t)(axis2.angle * 3.61111111111); //18.0555555555
-      pwm_handler(&htim1, &axis2, 2, count1);
+      //3.61111111111
+      axis1.desired_value = (uint32_t)(axis1.angle * 3.61111111111); //18.0555555555
+      axis2.desired_value = (uint32_t)(axis2.angle * 3.61111111111);
+      axis3.desired_value = (uint32_t)(axis3.angle * 3.61111111111);
+      axis4.desired_value = (uint32_t)(axis4.angle * 3.61111111111);
+      pwm_handler(&htim1, &axis1, 1, count1);
+      pwm_handler(&htim2, &axis2, 2, count2);
+      pwm_handler(&htim3, &axis3, 3, count3);
+      pwm_handler(&htim4, &axis4, 4, count4);
+
   }
   /* USER CODE END 3 */
 }
@@ -248,7 +267,7 @@ static void MX_TIM1_Init(void)
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -297,7 +316,7 @@ static void MX_TIM2_Init(void)
   htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -323,6 +342,104 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_Encoder_InitTypeDef sConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_Encoder_InitTypeDef sConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 0;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 65535;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC1Filter = 0;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+  sConfig.IC2Filter = 0;
+  if (HAL_TIM_Encoder_Init(&htim4, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -339,10 +456,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PB3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  /*Configure GPIO pins : PB13 PB3 PB4 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
