@@ -32,7 +32,7 @@ ret_val_t pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_num,
     /*1300 ~ 360 degree*/
     if (axis->desired_value != 0)
     {
-        if(encoder_val > (axis->desired_value ))
+        if(encoder_val > (axis->desired_value - CALIB_VAL))
         {
             HAL_GPIO_WritePin(GPIOB,axis_pin_num, RESET);
             axis->desired_value = 0;

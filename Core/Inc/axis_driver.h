@@ -26,7 +26,7 @@ typedef struct
 
 
 #define ANGLE_CONVERT_VAL     (18.0555555555) /*   3.61111111111 = 1 round => 1:5 ratio ~ 18.0555555555*/
-
+#define CALIB_VAL             (0U)
 ret_val_t pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_num, uint16_t encoder_val);
 
 
