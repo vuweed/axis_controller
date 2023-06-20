@@ -84,6 +84,7 @@ static void MX_TIM4_Init(void);
 static void pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint8_t axis_num, uint16_t encoder_val)
 {
     uint16_t axis_pin_num = 0;
+    axis->desired_value = (uint32_t)(axis->angle * 3.61111111111); //18.0555555555
     /*PWM*/
     switch (axis_num) {
         case 1:
@@ -189,11 +190,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      //3.61111111111
-      axis1.desired_value = (uint32_t)(axis1.angle * 3.61111111111); //18.0555555555
-      axis2.desired_value = (uint32_t)(axis2.angle * 3.61111111111);
-      axis3.desired_value = (uint32_t)(axis3.angle * 3.61111111111);
-      axis4.desired_value = (uint32_t)(axis4.angle * 3.61111111111);
       pwm_handler(&htim1, &axis1, 1, count1);
       pwm_handler(&htim2, &axis2, 2, count2);
       pwm_handler(&htim3, &axis3, 3, count3);
