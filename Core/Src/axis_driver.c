@@ -33,6 +33,7 @@ ret_val_t pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint16_t axis_pin
 ret_val_t auto_home(TIM_HandleTypeDef *htim, M_axis_t *axis, uint16_t *axis_pin_num)
 {
     /*Turn until receive home signal*/
+    ret_val_t ret_val = ERR;
     int i = 0;
     for(i = 0; i < 4; i++)
     {
@@ -40,20 +41,25 @@ ret_val_t auto_home(TIM_HandleTypeDef *htim, M_axis_t *axis, uint16_t *axis_pin_
     }
 //    while()
     {
-        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_9) == 1)
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_2) == 1)
         {
-            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), SET);
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), RESET);
         }
-        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_9) == 1)
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_3) == 1)
         {
-            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), SET);
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), RESET);
         }
-        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_9) == 1)
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_4) == 1)
         {
-            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), SET);
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), RESET);
+        }
+        if(HAL_GPIO_ReadPin (GPIOA, GPIO_PIN_5) == 1)
+        {
+            HAL_GPIO_WritePin(GPIOB, *(axis_pin_num), RESET);
         }
     }
-
+    ret_val = SUCCESSFUL;
+    return ret_val;
 }
 
 
