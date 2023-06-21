@@ -135,7 +135,8 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-//  auto_home(axis_arr);
+  auto_home(axis_arr);
+
   HAL_TIM_Encoder_Start_IT(&htim1, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_1);
@@ -153,6 +154,23 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+      /*Make sure all encoder value = 0 when axis angle = 0*/
+      if(axis1.angle == 0)
+      {
+          count1 = 0;
+      }
+      if(axis2.angle == 0)
+      {
+          count2 = 0;
+      }
+      if(axis3.angle == 0)
+      {
+          count3 = 0;
+      }
+      if(axis4.angle == 0)
+      {
+          count4 = 0;
+      }
       pwm_handler(&htim1, &axis1, GPIO_PIN_3, count1);
       pwm_handler(&htim2, &axis2, GPIO_PIN_4, count2);
       pwm_handler(&htim3, &axis3, GPIO_PIN_5, count3);

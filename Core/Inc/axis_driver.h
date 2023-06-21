@@ -29,7 +29,7 @@ typedef struct
 #define CALIB_VAL             (0U)
 
 ret_val_t pwm_handler(TIM_HandleTypeDef *htim, M_axis_t *axis, uint16_t axis_pin_num, uint16_t encoder_val);
-
+ret_val_t auto_home(uint16_t *axis_pin_num);
 
 
 
