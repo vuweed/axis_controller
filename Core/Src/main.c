@@ -20,9 +20,8 @@
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
-#include "axis_driver.h"
 /* USER CODE BEGIN Includes */
-
+#include "axis_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -136,12 +135,14 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+//  auto_home(axis_arr);
   HAL_TIM_Encoder_Start_IT(&htim1, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_1);
 
-  auto_home(axis_arr);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -415,6 +416,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PA2 PA3 PA4 PA5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB13 PB3 PB4 PB5 */
   GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
